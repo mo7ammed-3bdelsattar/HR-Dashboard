@@ -15,7 +15,7 @@ class UserSeeder extends Seeder
         User::create([
             'name' => 'Super Admin',
             'email' => 'admin@saas.com',
-            'password' => Hash::make('password'),
+            'password' => Hash::make('Mmm123@#$m'),
             'role' => 'super_admin',
             'is_active' => true,
         ]);
@@ -27,7 +27,7 @@ class UserSeeder extends Seeder
             User::create([
                 'name' => $company->name . ' Admin',
                 'email' => 'admin@' . $company->subdomain . '.com',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('Mmm123@#$m'),
                 'company_id' => $company->id,
                 'role' => 'company_admin',
                 'is_active' => true,
