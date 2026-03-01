@@ -42,8 +42,6 @@
                         <div class="mb-3 col-md-6">
                             <label class="form-label" for="role">{{ __('Role') }}</label>
                             <select id="role" name="role" class="form-select" required>
-                                <option value="employee">{{ __('Employee') }}</option>
-                                <option value="manager">{{ __('Manager') }}</option>
                                 <option value="company_admin">{{ __('Company Admin') }}</option>
                                 <option value="super_admin">{{ __('Super Admin') }}</option>
                             </select>
