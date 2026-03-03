@@ -11,15 +11,17 @@ use Illuminate\Http\Request;
 class CompanyController extends Controller
 {
     use ApiResponse;
-    public function index()
+    public function show(Request $request)
     {
-        $companies = Company::where('status' , '!=','cancelled')->get();
-        return $this->successResponse(CompanyResource::collection($companies) , 'Companies retrieved successfully');
-    }
-    public function show(string $name , string $uid)
-    {
-        $company = Company::where('name' , $name)->where('uid' , $uid)->first();
-        return $this->successResponse(new CompanyResource($company) , 'Company retrieved successfully');
+        $request->validate([
+            'name' => 'required|string',
+            'token' => 'required|string'
+        ]);
+        $company = Company::where('name' , $request->name)->where('uid' , $request->token)->first();
+        if($company){
+            return $this->successResponse(new CompanyResource($company) , 'Company retrieved successfully');
+        }
+        return $this->errorResponse('Company not found' , 404);
     }
 
 }

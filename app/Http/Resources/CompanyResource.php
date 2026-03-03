@@ -15,12 +15,7 @@ class CompanyResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'token' => $this->uid,
-            'name' => $this->name,
             'subdomain' => $this->subdomain,
-            'timezone' => $this->timezone,
-            'logo' => asset('storage/' . $this->logo),
-            'status' => $this->status,
         ];
     }
 }
