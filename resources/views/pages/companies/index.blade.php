@@ -28,6 +28,7 @@
                             <th>{{ __('Logo') }}</th>
                             <th>{{ __('Name') }}</th>
                             <th>{{ __('Subdomain') }}</th>
+                            <th>{{ __('Token') }}</th>
                             <th>{{ __('Status') }}</th>
                             <th>{{ __('Trial Ends') }}</th>
                             <th>{{ __('Actions') }}</th>
@@ -41,7 +42,11 @@
                                         alt="logo" class="rounded-circle" width="40" height="40">
                                 </td>
                                 <td><strong>{{ $company->name }}</strong></td>
-                                <td><code>{{ $company->subdomain }}</code></td>
+                                <td><a href="{{ $company->subdomain }}" class="p-0"><i class="bx bx-link"></i></a> <span
+                                        class="btn text-primary p-0"><i class="bx bx-copy"
+                                            onclick="copyToClipboard('{{ $company->subdomain }}')"></i></span></td>
+                                <td><span class="btn text-primary p-0"><i class="bx bx-copy"
+                                            onclick="copyToClipboard('{{ $company->uid }}')"></i></span></td>
                                 <td>
                                     @php
                                         $statusClass =

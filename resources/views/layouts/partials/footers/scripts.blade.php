@@ -83,4 +83,18 @@
         toastr.error("{{ session('error') }}");
     @endif
 </script>
+
+<script>
+    function copyToClipboard(text) {
+        if (!text) return;
+
+        navigator.clipboard.writeText(text)
+            .then(() => {
+                alert('Copied to clipboard');
+            })
+            .catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+    }
+</script>
 @stack('scripts')

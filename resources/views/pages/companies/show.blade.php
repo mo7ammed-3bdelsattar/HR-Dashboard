@@ -51,7 +51,15 @@
                             <ul class="list-unstyled">
                                 <li class="mb-3">
                                     <span class="fw-bold me-2">{{ __('Subdomain:') }}</span>
-                                    <span>{{ $company->subdomain }}.{{ config('app.domain') }}</span>
+                                    <a href="{{ $company->subdomain }}" class="p-0"><i class="bx bx-link"></i></a>
+                                    <span class="btn text-primary p-0"><i class="bx bx-copy"
+                                            onclick="copyToClipboard('{{ $company->subdomain }}')"></i></span>
+                                </li>
+                                <li class="mb-3">
+                                    <span class="fw-bold me-2">{{ __('Token:') }}</span>
+                                    <span>{{ Str::limit($company->uid, 10) }}</span>
+                                    <span class="btn text-primary p-0"><i class="bx bx-copy"
+                                            onclick="copyToClipboard('{{ $company->uid }}')"></i></span>
                                 </li>
                                 <li class="mb-3">
                                     <span class="fw-bold me-2">{{ __('Email:') }}</span>
