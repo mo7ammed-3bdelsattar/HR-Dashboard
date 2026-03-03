@@ -7,6 +7,7 @@ use App\Models\Company;
 use App\Models\Plan;
 use App\Http\Requests\StoreSubscriptionRequest;
 use App\Http\Requests\UpdateSubscriptionRequest;
+use App\Models\SubscriptionHistory;
 use Illuminate\Support\Facades\Auth;
 
 class SubscriptionController extends Controller
@@ -28,8 +29,30 @@ class SubscriptionController extends Controller
     {
         $data = $request->validated();
         $data['created_by'] = Auth::id();
+        $company = Company::find($data['company_id']);
+        $subscription = Subscription::create($data);
+        if ($subscription->billing_cycle == 'monthly') {
+            $subscription->ends_at = $subscription->starts_at->addMonth();
+        } elseif ($subscription->billing_cycle == 'yearly') {
+            $subscription->ends_at = $subscription->starts_at->addYear();
+        }
+        $subscription->save();
 
-        Subscription::create($data);
+        SubscriptionHistory::create([
+            'subscription_id' => $subscription->id,
+            'company_id' => $subscription->company_id,
+            'old_plan_id' => $company->current_plan_id ?? null,
+            'new_plan_id' => $data['plan_id'],
+            'action' => 'created',
+            'changed_by' => Auth::id(),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        // Update company's current subscription
+        $company = $subscription->company;
+        $company->trial_ends_at = $subscription->ends_at;
+        $company->current_plan_id = $data['plan_id'];
+        $company->save();
         return redirect()->route('subscriptions.index')->with('success', __('Subscription created successfully.'));
     }
 
@@ -47,7 +70,30 @@ class SubscriptionController extends Controller
 
     public function update(UpdateSubscriptionRequest $request, Subscription $subscription)
     {
-        $subscription->update($request->validated());
+        $data = $request->validated();
+        $data['company_id'] = $subscription->company_id;
+        $subscription->update($data);
+        if($request['billing_cycle'] == 'monthly'){
+            $subscription->ends_at = $subscription->starts_at->addMonth();
+        }elseif($request['billing_cycle'] == 'yearly'){
+            $subscription->ends_at = $subscription->starts_at->addYear();
+        }
+        $subscription->save();
+        if ($request['plan_id'] != $subscription->plan_id) {
+            SubscriptionHistory::create([
+                'subscription_id' => $subscription->id,
+                'company_id' => $subscription->company_id,
+                'old_plan_id' => $subscription->company->current_plan_id,
+                'new_plan_id' => $request['plan_id'],
+                'action' => 'updated',
+                'changed_by' => Auth::id(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+            $company = $subscription->company;
+            $company->current_plan_id = $request['plan_id'];
+            $company->save();
+        }
         return redirect()->route('subscriptions.index')->with('success', __('Subscription updated successfully.'));
     }
 

@@ -37,8 +37,8 @@
                         @foreach ($companies as $company)
                             <tr>
                                 <td>
-                                    <img src="{{ asset($company->logo ?? 'uploads/default.png') }}" alt="logo"
-                                        class="rounded-circle" width="40" height="40">
+                                    <img src="{{ asset($company->logo ? 'storage/' . $company->logo : 'uploads/default.png') }}"
+                                        alt="logo" class="rounded-circle" width="40" height="40">
                                 </td>
                                 <td><strong>{{ $company->name }}</strong></td>
                                 <td><code>{{ $company->subdomain }}</code></td>

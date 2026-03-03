@@ -16,34 +16,34 @@ class CompanySeeder extends Seeder
 
         $companies = [
             [
-                'name' => 'Acme Corp',
-                'subdomain' => 'acme',
-                'email' => 'contact@acme.com',
-                'phone1' => '123456789',
+                'name' => 'EraaSoft',
+                'uid' => \Illuminate\Support\Str::uuid()->toString(),
+                'admin_name' => 'Mostafa Mahfouz',
+                'admin_email' =>'mostafa@eraasoft.com',
+                'subdomain' => 'https://eraasofthr.gosorsolutions.com/api/v1',
+                'email' => 'info@eraasoft.com',
+                'phone1' => '+201001234567',
+                'phone2' => '+201001234567',
+                'address' => '13th floor, 5 Messadak St, Dokki, Giza, Egypt',
                 'status' => 'active',
-            ],
-            [
-                'name' => 'Global Tech',
-                'subdomain' => 'global',
-                'email' => 'info@globaltech.com',
-                'phone1' => '987654321',
-                'status' => 'active',
-            ],
-            [
-                'name' => 'Startup Hub',
-                'subdomain' => 'startup',
-                'email' => 'hello@startuphub.io',
-                'phone1' => '555444333',
-                'status' => 'trial',
-                'trial_ends_at' => Carbon::now()->addDays(14),
             ],
         ];
 
         foreach ($companies as $index => $companyData) {
+            $admin = \App\Models\User::create([
+                'name' => $companyData['admin_name'],
+                'email' => $companyData['admin_email'],
+                'phone' => $companyData['phone1'],
+                'password' => \Illuminate\Support\Facades\Hash::make('password'),
+                'role' => 'company_admin',
+            ]);
+            $companyData['user_id'] = $admin->id;
+            unset($companyData['admin_name'], $companyData['admin_email']);
             $company = Company::create($companyData);
-
             // Assign a plan to each company
             $plan = $plans[$index % count($plans)];
+            $company->current_plan_id = $plan->id;
+            $company->save();
 
             Subscription::create([
                 'company_id' => $company->id,

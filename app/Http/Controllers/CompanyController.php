@@ -22,17 +22,34 @@ class CompanyController extends Controller
 
     public function store(StoreCompanyRequest $request)
     {
-        $data = $request->validated();
+        $validatedData = $request->validated();
+
+        // Create the admin user
+        $user = \App\Models\User::create([
+            'name' => $validatedData['admin_name'],
+            'email' => $validatedData['admin_email'],
+            'password' => \Illuminate\Support\Facades\Hash::make('password'),
+            'role' => 'company_admin',
+        ]);
+
+        $companyData = $validatedData;
+        unset($companyData['admin_name'], $companyData['admin_email']);
+        $companyData['user_id'] = $user->id;
+        $companyData['uid'] = \Illuminate\Support\Str::uuid()->toString();
+
         if ($request->hasFile('logo')) {
-            $data['logo'] = $request->file('logo')->store('logos', 'public');
+            $companyData['logo'] = $request->file('logo')->store('logos', 'public');
         }
-        Company::create($data);
+
+        Company::create($companyData);
+
         return redirect()->route('companies.index')->with('success', __('Company created successfully.'));
     }
 
     public function show(Company $company)
     {
-        return view('pages.companies.show', compact('company'));
+        $plans = \App\Models\Plan::all();
+        return view('pages.companies.show', compact('company', 'plans'));
     }
 
     public function edit(Company $company)

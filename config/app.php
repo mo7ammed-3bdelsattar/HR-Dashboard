@@ -53,7 +53,7 @@ return [
     */
 
     'url' => env('APP_URL', 'http://localhost'),
-
+    'url_suffix' => env('APP_URL_SUFFIX', 'gosorsolutions.com'),
     /*
     |--------------------------------------------------------------------------
     | Application Timezone

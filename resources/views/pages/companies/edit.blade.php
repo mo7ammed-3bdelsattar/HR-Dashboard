@@ -22,7 +22,7 @@
                                 <div class="mb-3 col-md-6">
                                     <label class="form-label" for="name">{{ __('Company Name') }}</label>
                                     <input type="text" class="form-control @error('name') is-invalid @enderror"
-                                        id="name" name="name" value="{{ old('name', $company->name) }}" required />
+                                        id="name" name="name" value="{{ old('name', $company->name) }}"  />
                                     @error('name')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -32,7 +32,7 @@
                                     <div class="input-group input-group-merge">
                                         <input type="text" class="form-control @error('subdomain') is-invalid @enderror"
                                             id="subdomain" name="subdomain"
-                                            value="{{ old('subdomain', $company->subdomain) }}" required />
+                                            value="{{ old('subdomain', $company->subdomain) }}"  />
                                         <span
                                             class="input-group-text">.{{ config('app.url_suffix', 'yourapp.com') }}</span>
                                         @error('subdomain')
@@ -54,7 +54,7 @@
                                 <div class="mb-3 col-md-6">
                                     <label class="form-label" for="status">{{ __('Status') }}</label>
                                     <select class="form-select @error('status') is-invalid @enderror" id="status"
-                                        name="status" required>
+                                        name="status" >
                                         <option value="trial"
                                             {{ old('status', $company->status) == 'trial' ? 'selected' : '' }}>Trial
                                         </option>
@@ -79,12 +79,18 @@
                                     <label class="form-label" for="phone1">{{ __('Phone 1') }}</label>
                                     <input type="text" class="form-control @error('phone1') is-invalid @enderror"
                                         id="phone1" name="phone1" value="{{ old('phone1', $company->phone1) }}" />
+                                    @error('phone1')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="mb-3 col-md-6">
                                     <label class="form-label" for="timezone">{{ __('Timezone') }}</label>
                                     <input type="text" class="form-control @error('timezone') is-invalid @enderror"
                                         id="timezone" name="timezone" value="{{ old('timezone', $company->timezone) }}"
-                                        required />
+                                         />
+                                    @error('timezone')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
 

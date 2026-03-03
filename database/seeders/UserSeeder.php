@@ -19,19 +19,5 @@ class UserSeeder extends Seeder
             'role' => 'super_admin',
             'is_active' => true,
         ]);
-
-        // 2. Create Company Admins for each seeded company
-        $companies = Company::all();
-
-        foreach ($companies as $company) {
-            User::create([
-                'name' => $company->name . ' Admin',
-                'email' => 'admin@' . $company->subdomain . '.com',
-                'password' => Hash::make('Mmm123@#$m'),
-                'company_id' => $company->id,
-                'role' => 'company_admin',
-                'is_active' => true,
-            ]);
-        }
     }
 }

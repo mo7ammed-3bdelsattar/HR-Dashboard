@@ -11,14 +11,19 @@ class Company extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
+        'uid',
         'name',
         'subdomain',
         'domain',
         'email',
-        'phone',
+        'phone1',
+        'phone2',
+        'address',
         'logo',
         'status',
         'trial_ends_at',
+        'current_plan_id',
+        'user_id',
         'timezone',
     ];
 
@@ -26,9 +31,14 @@ class Company extends Model
         'trial_ends_at' => 'datetime',
     ];
 
-    public function users()
+    public function user()
     {
-        return $this->hasMany(User::class);
+        return $this->belongsTo(User::class);
+    }
+
+    public function currentPlan()
+    {
+        return $this->belongsTo(Plan::class, 'current_plan_id');
     }
 
     public function subscriptions()

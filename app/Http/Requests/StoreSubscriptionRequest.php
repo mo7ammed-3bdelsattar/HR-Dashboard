@@ -20,10 +20,7 @@ class StoreSubscriptionRequest extends FormRequest
             'billing_cycle' => 'required|in:monthly,yearly,custom',
             'price_paid' => 'required|numeric|min:0',
             'currency' => 'nullable|string|max:3',
-            'starts_at' => 'nullable|date',
-            'ends_at' => 'nullable|date',
-            'trial_ends_at' => 'nullable|date',
-            'max_employees_override' => 'nullable|integer|min:0',
+            'starts_at' => 'required|date',
             'notes' => 'nullable|string',
         ];
     }

@@ -1,5 +1,4 @@
 @extends('layouts.master')
-
 @section('title', __('Company Details') . ' - ' . $company->name)
 
 @section('content')
@@ -34,7 +33,7 @@
                             <div class="d-flex align-items-start me-4 mt-3 gap-3">
                                 <span class="badge bg-label-primary p-2 rounded"><i class="bx bx-user bx-sm"></i></span>
                                 <div>
-                                    <h5 class="mb-0">{{ $company->users_count ?? $company->users()->count() }}</h5>
+                                    <h5 class="mb-0">1</h5>
                                     <span>{{ __('Employees') }}</span>
                                 </div>
                             </div>
@@ -99,7 +98,13 @@
             <div class="col-xl-8 col-lg-7 col-md-7 order-0 order-md-1">
                 <!-- Subscriptions Tab -->
                 <div class="card mb-4">
-                    <h5 class="card-header">{{ __('Subscription History') }}</h5>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="card-header">{{ __('Subscription History') }}</h5>
+                        <button type="button" class="btn btn-primary me-3" data-bs-toggle="modal"
+                            data-bs-target="#addSubscriptionModal">
+                            {{ __('Add Subscription') }}
+                        </button>
+                    </div>
                     <div class="table-responsive">
                         <table class="table border-top">
                             <thead>
@@ -128,47 +133,147 @@
 
                 <!-- Users Tab -->
                 <div class="card mb-4">
-                    <h5 class="card-header">{{ __('Company Users') }}</h5>
+                    <h5 class="card-header">{{ __('Company Admin') }}</h5>
                     <div class="table-responsive">
                         <table class="table border-top">
                             <thead>
                                 <tr>
-                                    <th>{{ __('User') }}</th>
+                                    <th>{{ __('Name') }}</th>
                                     <th>{{ __('Role') }}</th>
                                     <th>{{ __('Status') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($company->users as $user)
-                                    <tr>
-                                        <td>
-                                            <div class="d-flex justify-content-start align-items-center">
-                                                <div class="avatar-wrapper me-2">
-                                                    <div class="avatar avatar-sm">
-                                                        @if ($user->avatar)
-                                                            <img src="{{ asset('storage/' . $user->avatar) }}"
-                                                                alt="Avatar" class="rounded-circle">
-                                                        @else
-                                                            <span
-                                                                class="avatar-initial rounded-circle bg-label-primary">{{ substr($user->name, 0, 1) }}</span>
-                                                        @endif
-                                                    </div>
-                                                </div>
-                                                <div class="d-flex flex-column">
-                                                    <span class="fw-semibold text-body">{{ $user->name }}</span>
-                                                    <small class="text-muted">{{ $user->email }}</small>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex justify-content-start align-items-center">
+                                            <div class="avatar-wrapper me-2">
+                                                <div class="avatar avatar-sm">
+                                                    <span
+                                                        class="avatar-initial rounded-circle bg-label-primary">{{ substr($company->user->name, 0, 1) }}</span>
                                                 </div>
                                             </div>
-                                        </td>
-                                        <td>{{ ucfirst($user->role) }}</td>
-                                        <td><span
-                                                class="badge {{ $user->is_active ? 'bg-label-success' : 'bg-label-secondary' }}">{{ $user->is_active ? __('Active') : __('Inactive') }}</span>
-                                        </td>
-                                    </tr>
-                                @endforeach
+                                            <div class="d-flex flex-column">
+                                                <span class="fw-semibold text-body">{{ $company->user->name }}</span>
+                                                <small class="text-muted">{{ $company->user->email }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>{{ ucfirst($company->user->role) }}</td>
+                                    <td><span
+                                            class="badge {{ $company->user->is_active ? 'bg-label-success' : 'bg-label-secondary' }}">{{ $company->user->is_active ? __('Active') : __('Inactive') }}</span>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- / Content -->
+
+    <!-- Add Subscription Modal -->
+    <div class="modal fade" id="addSubscriptionModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-simple modal-add-new-address">
+            <div class="modal-content p-3 p-md-5">
+                <div class="modal-body">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="text-center mb-4">
+                        <h3 class="address-title">{{ __('Add New Subscription') }}</h3>
+                        <p class="address-subtitle">{{ __('Setup a new subscription for') }} {{ $company->name }}</p>
+                    </div>
+                    <form action="{{ route('subscriptions.store') }}" method="POST" class="row g-3">
+                        @csrf
+                        <input type="hidden" name="company_id" value="{{ $company->id }}">
+
+                        <div class="col-12 col-md-6">
+                            <label class="form-label" for="plan_id">{{ __('Plan') }}</label>
+                            <select id="plan_id" name="plan_id"
+                                class="form-select @error('plan_id') is-invalid @enderror" required>
+                                <option value="">{{ __('Select Plan') }}</option>
+                                @foreach ($plans as $plan)
+                                    <option value="{{ $plan->id }}"
+                                        {{ old('plan_id') == $plan->id ? 'selected' : '' }}>
+                                        {{ $plan->name }} ({{ $plan->price_monthly }} / month)
+                                        ({{ $plan->price_yearly }} / year)
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('plan_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label class="form-label" for="status">{{ __('Status') }}</label>
+                            <select id="status" name="status"
+                                class="form-select @error('status') is-invalid @enderror" required>
+                                <option value="trial" selected>{{ __('Trial') }}</option>
+                                <option value="active">{{ __('Active') }}</option>
+                                <option value="expired">{{ __('Expired') }}</option>
+                            </select>
+                            @error('status')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label class="form-label" for="billing_cycle">{{ __('Billing Cycle') }}</label>
+                            <select id="billing_cycle" name="billing_cycle"
+                                class="form-select @error('billing_cycle') is-invalid @enderror" required>
+                                <option value="monthly">{{ __('Monthly') }}</option>
+                                <option value="yearly">{{ __('Yearly') }}</option>
+                            </select>
+                            @error('billing_cycle')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label class="form-label" for="starts_at">{{ __('Starts At') }}</label>
+                            <input type="date" id="starts_at" name="starts_at"
+                                class="form-control @error('starts_at') is-invalid @enderror"
+                                value="{{ old('starts_at', date('Y-m-d')) }}" required />
+                            @error('starts_at')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label class="form-label" for="price_paid">{{ __('Price Paid') }}</label>
+                            <input type="number" step="0.01" id="price_paid" name="price_paid"
+                                class="form-control @error('price_paid') is-invalid @enderror"
+                                value="{{ old('price_paid', 0) }}" required />
+                            @error('price_paid')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label class="form-label" for="currency">{{ __('Currency') }}</label>
+                            <input type="text" id="currency" name="currency"
+                                class="form-control @error('currency') is-invalid @enderror"
+                                value="{{ old('currency', 'USD') }}" required />
+                            @error('currency')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label" for="notes">{{ __('Notes') }}</label>
+                            <textarea id="notes" name="notes" class="form-control @error('notes') is-invalid @enderror" rows="3">{{ old('notes') }}</textarea>
+                            @error('notes')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-12 text-center">
+                            <button type="submit" class="btn btn-primary me-sm-3 me-1">{{ __('Submit') }}</button>
+                            <button type="reset" class="btn btn-label-secondary" data-bs-dismiss="modal"
+                                aria-label="Close">{{ __('Cancel') }}</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
