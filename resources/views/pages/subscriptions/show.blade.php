@@ -107,6 +107,50 @@
                                 <small class="text-muted">{{ $subscription->company->subdomain }}</small>
                             </div>
                         </div>
+
+                        <div class="info-container">
+                            <ul class="list-unstyled">
+                                <li class="mb-3">
+                                    <span class="fw-bold me-2">{{ __('Email:') }}</span>
+                                    <span>{{ $subscription->company->email ?? '-' }}</span>
+                                </li>
+                                <li class="mb-3">
+                                    <span class="fw-bold me-2">{{ __('Phone:') }}</span>
+                                    <span>{{ $subscription->company->phone1 ?? '-' }}</span>
+                                </li>
+                                <li class="mb-3">
+                                    <span class="fw-bold me-2">{{ __('Address:') }}</span>
+                                    <span>{{ $subscription->company->address ?? '-' }}</span>
+                                </li>
+                                <li class="mb-3">
+                                    <span class="fw-bold me-2">{{ __('Status:') }}</span>
+                                    <span class="badge bg-label-info">{{ ucfirst($subscription->company->status) }}</span>
+                                </li>
+                                <li class="mb-3">
+                                    <span class="fw-bold me-2">{{ __('Employees:') }}</span>
+                                    <span>{{ 1 }}</span>
+                                </li>
+                                @if ($subscription->company->user)
+                                    <hr class="my-4">
+                                    <li class="mb-0">
+                                        <p class="mb-2 fw-bold">{{ __('Company Admin') }}</p>
+                                        <div class="d-flex justify-content-start align-items-center">
+                                            <div class="avatar-wrapper me-2">
+                                                <div class="avatar avatar-sm">
+                                                    <span
+                                                        class="avatar-initial rounded-circle bg-label-primary">{{ substr($subscription->company->user->name, 0, 1) }}</span>
+                                                </div>
+                                            </div>
+                                            <div class="d-flex flex-column">
+                                                <span
+                                                    class="fw-semibold text-body">{{ $subscription->company->user->name }}</span>
+                                                <small class="text-muted">{{ $subscription->company->user->email }}</small>
+                                            </div>
+                                        </div>
+                                    </li>
+                                @endif
+                            </ul>
+                        </div>
                     </div>
                 </div>
 

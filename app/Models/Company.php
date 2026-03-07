@@ -41,16 +41,10 @@ class Company extends Model
         return $this->belongsTo(Plan::class, 'current_plan_id');
     }
 
-    public function subscriptions()
+    public function subscription()
     {
-        return $this->hasMany(Subscription::class);
+        return $this->hasOne(Subscription::class);
     }
-
-    public function currentSubscription()
-    {
-        return $this->hasOne(Subscription::class)->where('status', 'active')->where('ends_at', '>', now())->latest();
-    }
-
     public function payments()
     {
         return $this->hasMany(Payment::class);
@@ -60,18 +54,6 @@ class Company extends Model
     {
         return $this->hasMany(SubscriptionHistory::class);
     }
-
-    // Business Logic Methods
-    public function isSubscriptionActive()
-    {
-        return $this->currentSubscription()->exists();
-    }
-
-    public function getEmployeeCount()
-    {
-        return $this->users()->where('role', '!=', 'super_admin')->count();
-    }
-
     public function canAddEmployee()
     {
         $sub = $this->currentSubscription;

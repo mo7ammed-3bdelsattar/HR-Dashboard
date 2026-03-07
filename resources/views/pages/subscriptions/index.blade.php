@@ -46,8 +46,8 @@
                                         $statusClass =
                                             [
                                                 'active' => 'bg-label-success',
-                                                'expired' => 'bg-label-danger',
-                                                'cancelled' => 'bg-label-warning',
+                                                'expired' => 'bg-label-warning',
+                                                'cancelled' => 'bg-label-danger',
                                                 'trial' => 'bg-label-info',
                                             ][$subscription->status] ?? 'bg-label-secondary';
                                     @endphp
@@ -65,9 +65,19 @@
                                             <a class="dropdown-item"
                                                 href="{{ route('subscriptions.show', $subscription->id) }}"><i
                                                     class="bx bx-show-alt me-1"></i> {{ __('Show') }}</a>
-                                            <a class="dropdown-item"
-                                                href="{{ route('subscriptions.edit', $subscription->id) }}"><i
-                                                    class="bx bx-edit-alt me-1"></i> {{ __('Edit') }}</a>
+                                            @if ($subscription->status == 'active' || $subscription->status == 'trial')
+                                            <form action="{{ route('subscriptions.cancel', $subscription->id) }}" method="POST">
+                                                @csrf
+                                                <button type="submit" class="dropdown-item"><i
+                                                        class="bx bx-x me-1"></i> {{ __('Cancel') }}</button>
+                                            </form>
+                                            @elseif ($subscription->status == 'trial' || $subscription->status == 'cancelled' || $subscription->status == 'expired')
+                                            <form action="{{ route('subscriptions.activate', $subscription->id) }}" method="POST">
+                                                @csrf
+                                                <button type="submit" class="dropdown-item"><i
+                                                        class="bx bx-play me-1"></i> {{ __('Activate') }}</button>
+                                            </form>
+                                            @endif
                                             <form action="{{ route('subscriptions.destroy', $subscription->id) }}"
                                                 method="POST" onsubmit="return confirm('{{ __('Are you sure?') }}')">
                                                 @csrf

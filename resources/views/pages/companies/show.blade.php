@@ -40,8 +40,7 @@
                             <div class="d-flex align-items-start mt-3 gap-3">
                                 <span class="badge bg-label-primary p-2 rounded"><i class="bx bx-check bx-sm"></i></span>
                                 <div>
-                                    <h5 class="mb-0">{{ $company->subscriptions()->where('status', 'active')->count() }}
-                                    </h5>
+                                    <h5 class="mb-0">{{ $company->status == 'active' ? 1 : 0 }}</h5>
                                     <span>{{ __('Active Subs') }}</span>
                                 </div>
                             </div>
@@ -67,7 +66,7 @@
                                 </li>
                                 <li class="mb-3">
                                     <span class="fw-bold me-2">{{ __('Plan:') }}</span>
-                                    <span>{{ $company->currentSubscription->plan->name ?? __('No Active Plan') }}</span>
+                                    <span>{{ $company->currentPlan->name ?? __('No Active Plan') }}</span>
                                 </li>
                                 <li class="mb-3">
                                     <span class="fw-bold me-2">{{ __('Phone 1:') }}</span>
@@ -106,36 +105,93 @@
             <div class="col-xl-8 col-lg-7 col-md-7 order-0 order-md-1">
                 <!-- Subscriptions Tab -->
                 <div class="card mb-4">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="card-header">{{ __('Subscription History') }}</h5>
-                        <button type="button" class="btn btn-primary me-3" data-bs-toggle="modal"
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">{{ __('Subscription Management') }}</h5>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                             data-bs-target="#addSubscriptionModal">
                             {{ __('Add Subscription') }}
                         </button>
                     </div>
-                    <div class="table-responsive">
-                        <table class="table border-top">
-                            <thead>
-                                <tr>
-                                    <th>{{ __('Plan') }}</th>
-                                    <th>{{ __('Price') }}</th>
-                                    <th>{{ __('Billing') }}</th>
-                                    <th>{{ __('Status') }}</th>
-                                    <th>{{ __('Ends At') }}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($company->subscriptions as $sub)
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <small class="text-uppercase text-muted d-block mb-1">{{ __('Current Plan') }}</small>
+                                <h5 class="mb-1 text-primary">
+                                    {{ $company->currentPlan->name ?? __('No Active Plan') }}
+                                </h5>
+                                @if ($company->subscription)
+                                    <small class="text-muted">{{ ucfirst($company->subscription->billing_cycle) }} -
+                                        {{ $company->subscription->price_paid }}
+                                        {{ $company->subscription->currency }}</small>
+                                @endif
+                            </div>
+                            <div class="col-sm-6 text-sm-end">
+                                <small class="text-uppercase text-muted d-block mb-1">{{ __('Status') }}</small>
+                                <span class="badge bg-label-info mb-1">{{ ucfirst($company->status) }}</span>
+                                @if ($company->subscription && $company->subscription->ends_at)
+                                    <div class="small text-muted">{{ __('Expires:') }}
+                                        {{ $company->subscription->ends_at->format('M d, Y') }}</div>
+                                @endif
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <h5 class="card-title mb-3">{{ __('Subscription History') }}</h5>
+                        <div class="table-responsive">
+                            <table class="table border-top table-sm">
+                                <thead>
                                     <tr>
-                                        <td><strong>{{ $sub->plan->name }}</strong></td>
-                                        <td>{{ $sub->price_paid }} {{ $sub->currency }}</td>
-                                        <td>{{ ucfirst($sub->billing_cycle) }}</td>
-                                        <td><span class="badge bg-label-info">{{ ucfirst($sub->status) }}</span></td>
-                                        <td>{{ $sub->ends_at ? $sub->ends_at->format('Y-m-d') : '-' }}</td>
+                                        <th>{{ __('Action') }}</th>
+                                        <th>{{ __('Plans') }}</th>
+                                        <th>{{ __('By') }}</th>
+                                        <th>{{ __('Date') }}</th>
                                     </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    @forelse ($company->subscriptionHistory()->with(['oldPlan', 'newPlan', 'changer'])->latest()->get() as $history)
+                                        <tr>
+                                            <td class="py-2">
+                                                @php
+                                                    $actionBadge =
+                                                        [
+                                                            'cancelled' => 'bg-label-danger',
+                                                            'created' => 'bg-label-primary',
+                                                            'renewed' => 'bg-label-success',
+                                                            'updated' => 'bg-label-info',
+                                                        ][$history->action] ?? 'bg-label-secondary';
+                                                @endphp
+                                                <span class="badge {{ $actionBadge }} badge-sm">
+                                                    {{ ucfirst($history->action) }}
+                                                </span>
+                                            </td>
+                                            <td class="py-2">
+                                                <div class="d-flex align-items-center">
+                                                    @if ($history->oldPlan)
+                                                        <small class="text-muted">{{ $history->oldPlan->name }}</small>
+                                                        <i class="bx bx-right-arrow-alt mx-1 text-muted"></i>
+                                                    @endif
+                                                    <small
+                                                        class="fw-bold">{{ $history->newPlan->name ?? __('N/A') }}</small>
+                                                </div>
+                                            </td>
+                                            <td class="py-2"><small>{{ $history->changer->name ?? __('System') }}</small>
+                                            </td>
+                                            <td class="py-2"><small
+                                                    class="text-muted">{{ $history->created_at->format('M d, Y') }}</small>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="4" class="text-center py-4 text-muted">
+                                                <i class="bx bx-history d-block fs-3 mb-2"></i>
+                                                {{ __('No history logs found') }}
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 

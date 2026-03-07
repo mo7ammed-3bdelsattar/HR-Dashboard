@@ -23,7 +23,9 @@ Route::middleware('auth')->group(function () {
     Route::resource('plans', \App\Http\Controllers\PlanController::class);
     Route::resource('users', \App\Http\Controllers\UserController::class);
     Route::resource('subscriptions', \App\Http\Controllers\SubscriptionController::class);
-
+    Route::post('/cancel-subscription/{subscription}', [\App\Http\Controllers\SubscriptionController::class, 'cancel'])->name('subscriptions.cancel');
+    Route::post('/resume-subscription/{subscription}', [\App\Http\Controllers\SubscriptionController::class, 'resume'])->name('subscriptions.resume');
+    Route::post('/activate-subscription/{subscription}', [\App\Http\Controllers\SubscriptionController::class, 'activate'])->name('subscriptions.activate');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 
