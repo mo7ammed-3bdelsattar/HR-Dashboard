@@ -352,20 +352,13 @@
                 fetch('{{ $company->subdomain }}/api/v1/users/count')
                     .then(response => response.json())
                     .then(data => {
-                        let count = 0;
-                        if (typeof data.count !== 'undefined') {
-                            count = data.count;
-                        } else if (data.data && typeof data.data.count !== 'undefined') {
-                            count = data.data.count;
-                        } else if (typeof data.data !== 'undefined' && typeof data.data !== 'object') {
-                            count = data.data;
-                        }
-                        employeeCountElement.innerText = count;
+                        employeeCountElement.innerText = data !== null ? data : 0;
                     })
                     .catch(error => {
                         console.error('Error fetching employee count:', error);
                         employeeCountElement.innerText = '0';
                     });
+
             }
         });
     </script>
