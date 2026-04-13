@@ -33,7 +33,7 @@
                             <div class="d-flex align-items-start me-4 mt-3 gap-3">
                                 <span class="badge bg-label-primary p-2 rounded"><i class="bx bx-user bx-sm"></i></span>
                                 <div>
-                                    <h5 class="mb-0">1</h5>
+                                    <h5 id="employeeCount" class="mb-0"></h5>
                                     <span>{{ __('Employees') }}</span>
                                 </div>
                             </div>
@@ -343,3 +343,30 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const employeeCountElement = document.getElementById('employeeCount');
+            if (employeeCountElement) {
+                fetch('{{ $company->subdomain }}/api/v1/users/count')
+                    .then(response => response.json())
+                    .then(data => {
+                        let count = 0;
+                        if (typeof data.count !== 'undefined') {
+                            count = data.count;
+                        } else if (data.data && typeof data.data.count !== 'undefined') {
+                            count = data.data.count;
+                        } else if (typeof data.data !== 'undefined' && typeof data.data !== 'object') {
+                            count = data.data;
+                        }
+                        employeeCountElement.innerText = count;
+                    })
+                    .catch(error => {
+                        console.error('Error fetching employee count:', error);
+                        employeeCountElement.innerText = '0';
+                    });
+            }
+        });
+    </script>
+@endpush
