@@ -16,6 +16,8 @@ class CompanyResource extends JsonResource
     {
         return [
             'subdomain' => $this->subdomain,
+            'name' => $this->name,
+            'logo' => asset($this->logo),
         ];
     }
 }
