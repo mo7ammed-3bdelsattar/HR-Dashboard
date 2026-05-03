@@ -17,7 +17,7 @@ class CompanyResource extends JsonResource
         return [
             'subdomain' => $this->subdomain,
             'name' => $this->name,
-            'logo' => asset($this->logo),
+            'logo' => asset($this->logo ? 'storage/' . $this->logo : 'uploads/default.png'),
         ];
     }
 }
