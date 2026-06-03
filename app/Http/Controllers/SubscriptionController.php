@@ -34,10 +34,12 @@ class SubscriptionController extends Controller
             $company->subscription()->delete();
         }
         $subscription = Subscription::create($data);
-        if ($subscription->billing_cycle == 'monthly') {
-            $subscription->ends_at = $subscription->starts_at->addMonth();
-        } elseif ($subscription->billing_cycle == 'yearly') {
-            $subscription->ends_at = $subscription->starts_at->addYear();
+        if (empty($data['ends_at'])) {
+            if ($subscription->billing_cycle == 'monthly') {
+                $subscription->ends_at = $subscription->starts_at->addMonth();
+            } elseif ($subscription->billing_cycle == 'yearly') {
+                $subscription->ends_at = $subscription->starts_at->addYear();
+            }
         }
         $subscription->save();
 

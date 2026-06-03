@@ -305,6 +305,16 @@
                         </div>
 
                         <div class="col-12 col-md-6">
+                            <label class="form-label" for="ends_at">{{ __('Ends At') }}</label>
+                            <input type="date" id="ends_at" name="ends_at"
+                                class="form-control @error('ends_at') is-invalid @enderror"
+                                value="{{ old('ends_at') }}" />
+                            @error('ends_at')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-12 col-md-6">
                             <label class="form-label" for="price_paid">{{ __('Price Paid') }}</label>
                             <input type="number" step="0.01" id="price_paid" name="price_paid"
                                 class="form-control @error('price_paid') is-invalid @enderror"
@@ -359,6 +369,43 @@
                         employeeCountElement.innerText = '0';
                     });
 
+            }
+
+            const startsAtInput = document.getElementById('starts_at');
+            const endsAtInput = document.getElementById('ends_at');
+            const billingCycleSelect = document.getElementById('billing_cycle');
+
+            if (startsAtInput && endsAtInput && billingCycleSelect) {
+                function calculateEndDate() {
+                    if (!startsAtInput.value) return;
+                    
+                    const startDate = new Date(startsAtInput.value);
+                    if (isNaN(startDate.getTime())) return;
+                    
+                    const cycle = billingCycleSelect.value;
+                    const endDate = new Date(startDate);
+                    
+                    if (cycle === 'monthly') {
+                        endDate.setMonth(endDate.getMonth() + 1);
+                    } else if (cycle === 'yearly') {
+                        endDate.setFullYear(endDate.getFullYear() + 1);
+                    } else {
+                        return;
+                    }
+                    
+                    const year = endDate.getFullYear();
+                    const month = String(endDate.getMonth() + 1).padStart(2, '0');
+                    const day = String(endDate.getDate()).padStart(2, '0');
+                    
+                    endsAtInput.value = `${year}-${month}-${day}`;
+                }
+
+                startsAtInput.addEventListener('change', calculateEndDate);
+                billingCycleSelect.addEventListener('change', calculateEndDate);
+
+                if(!endsAtInput.value) {
+                    calculateEndDate();
+                }
             }
         });
     </script>

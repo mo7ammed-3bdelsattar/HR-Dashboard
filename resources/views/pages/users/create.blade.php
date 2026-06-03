@@ -62,19 +62,7 @@
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
-                        <div class="mb-3 col-md-6">
-                            <label class="form-label" for="company_id">{{ __('Company') }}</label>
-                            <select id="company_id" name="company_id"
-                                class="form-select @error('company_id') is-invalid @enderror">
-                                <option value="">{{ __('None (Super Admin)') }}</option>
-                                @foreach ($companies as $company)
-                                    <option value="{{ $company->id }}">{{ $company->name }}</option>
-                                @endforeach
-                            </select>
-                            @error('company_id')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+
                     </div>
 
                     <div class="row">

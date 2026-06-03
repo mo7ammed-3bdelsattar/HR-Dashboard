@@ -21,6 +21,7 @@ class UpdateSubscriptionRequest extends FormRequest
             'price_paid' => 'required|numeric|min:0',
             'currency' => 'required|string|max:3',
             'starts_at' => 'nullable|date',
+            'ends_at' => 'nullable|date|after_or_equal:starts_at',
             'notes' => 'nullable|string',
         ];
     }

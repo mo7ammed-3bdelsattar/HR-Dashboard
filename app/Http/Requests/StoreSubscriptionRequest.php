@@ -21,6 +21,7 @@ class StoreSubscriptionRequest extends FormRequest
             'price_paid' => 'required|numeric|min:0',
             'currency' => 'nullable|string|max:3',
             'starts_at' => 'required|date',
+            'ends_at' => 'required|date|after_or_equal:starts_at',
             'notes' => 'nullable|string',
         ];
     }
